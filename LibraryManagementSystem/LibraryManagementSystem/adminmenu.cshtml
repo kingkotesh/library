@@ -1,0 +1,97 @@
+﻿@RenderPage("~/3lines.cshtml")
+@using WebMatrix.Data
+@{
+    Database db = Database.Open("lmsdb");
+    var kk = Request.Cookies["category"].Value;
+    var q = "select * from " + kk;
+    if (IsPost && Request.Form["abbtn"] != null)
+    {
+        Validation.RequireField("title", "Enter title");
+        Validation.RequireField("author", "Enter author");
+        Validation.RequireField("price", "Enter price");
+        try
+        {
+            if (Validation.IsValid())
+            {
+                var iq = "insert into " + kk + "(title,author,price,status) values('" + Request.Form["title"] + "','" + Request.Form["author"] + "','" + Request.Form["price"] + "','NotReserved')";
+                db.Execute(iq);
+                Response.Redirect("~/adminmenu.cshtml");
+            }
+        }
+        catch (Exception e)
+        {
+            <h1>Book already Exists</h1>
+        }
+
+
+
+    }
+    var st = "";
+    if (IsPost && Request.Form["btn"] != null)
+    {
+        st = "%" + Request.Form["st"] + "%";
+        q = "select * from " + kk + " where title like @0";
+    }
+    var r = db.Query(q, st);
+    WebGrid w = new WebGrid(r);
+    var containerStyle = "margin-left: 200px";
+
+}
+<style>
+
+    .webgrid-table {
+        width: 1000px;
+        font-size: 40px;
+    }
+
+    .div1 {
+        float: right;
+        padding-right: 20px;
+    }
+    .div2{
+        float:none;
+        margin-left:10px;
+    }
+
+    h1, p {
+        margin-left: 200px;
+    }
+</style>
+<body>
+    <div class="div1">
+        <form action="" method="post">
+            <fieldset>
+                title<input type="text" id="st" name="st" />
+                <input type="submit" id="btn" name="btn" value="search" />
+            </fieldset>
+            
+        </div>
+    <br/><br /><br /><br />
+    <div class="div2">
+        
+
+            <fieldset>
+                <label for="name">Title</label>
+                <input type="text" id="title" name="title" />
+                <label for="msg">Author</label>
+                <input type="text" id="author" name="author" />
+                <label for="msg">Price</label>
+                <input type="text" id="price" name="price" />
+                <input type="submit" value="Add Book" id="abbtn" name="abbtn" />
+            </fieldset>
+        </fOrm>
+    </div>
+</body>
+
+<div style="@containerStyle">
+    @w.GetHtml(tableStyle: "webgrid-table",
+    headerStyle: "webgrid-header",
+    alternatingRowStyle: "webgrid-alternating-row",
+    rowStyle: "webgrid-row-style",
+        columns: w.Columns(w.Column("id"), w.Column("title"), w.Column("author"), w.Column("price"), w.Column("status"),
+        w.Column(format:@<a href=" ~/view?id=@item.id">view</a>),
+w.Column(format:@<a href="~/EditDelete?id=@item.id">Update/Delete</a>)
+))
+</div>
+
+    

@@ -1,0 +1,88 @@
+﻿@using WebMatrix.Data
+@{
+    Database db = Database.Open("lmsdb");
+    string errorMessage = null;
+
+    if (IsPost)
+    {
+        String us = Request.Form["us"];
+        String ps = Request.Form["ps"];
+        var r = db.QuerySingle("select * from UserDetails where username = @0 AND password = @1", us, ps);
+        var rr = db.QuerySingle("select * from AdminDetails where username = @0 AND password = @1", us, ps);
+        Response.Cookies["cook"].Value = Request.Form["us"];
+
+        if (r != null)
+        {
+            Response.Redirect("~/usercategory.cshtml");
+        }
+        else if (rr != null)
+        {
+            Response.Redirect("~/admincategory.cshtml");
+        }
+        else
+        {
+            errorMessage = "Invalid login attempt. Please check your credentials.";
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: auto;
+            margin-top: 100px;
+            border: 1px solid #ccc; /* Add border */
+            padding: 20px;
+            border-radius: 5px; /* Optional: Add rounded corners */
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container login-container">
+        <h2 class="text-center mb-4">Login</h2>
+
+        <form method="post" action="">
+            <div class="form-group">
+                <label for="us">Username:</label>
+                <input type="text" class="form-control" id="us" name="us" required placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label for="ps">Password:</label>
+                <input type="password" class="form-control" id="ps" name="ps" required placeholder="Enter your password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">
+                @errorMessage
+            </div>
+        }
+    </div>
+
+    <!-- Bootstrap JS and Popper.js CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

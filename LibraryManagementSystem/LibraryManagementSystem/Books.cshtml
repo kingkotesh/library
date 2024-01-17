@@ -1,0 +1,48 @@
+﻿
+@using WebMatrix.Data;
+@{
+    Database db = Database.Open("lmsdb");
+    var q = "select * from cse union all select * from ece union all select * from it union all select * from mech";
+    var r = db.Query(q);
+    WebGrid w = new WebGrid(r);
+
+}
+<head>
+    <style>
+        div {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 20px;
+            color: black;
+            padding: 20px;
+            text-align: right;
+            float: right;
+        }
+
+        .webgrid-table {
+            width: 1000px;
+            font-size: 40px;
+            text-align: center;
+        }
+
+        body {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>All Available Books</h1>
+
+    @w.GetHtml(
+                tableStyle: "webgrid-table",
+                headerStyle: "webgrid-header",
+                alternatingRowStyle: "webgrid-alternating-row",
+                columns: w.Columns(
+                    w.Column("Title", "Title"),
+                    w.Column("Author", "Author"),
+                    w.Column("Price", "Price")
+            ))
+</body>
+<h1>
+    <a href="~/Default.cshtml">return to home page</a>
+</h1>
